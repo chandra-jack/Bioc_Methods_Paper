@@ -47,3 +47,39 @@ max(MDA_dataset$CorrectedAbs)
 with(MDA_dataset, raw_map(data = CorrectedAbs, well = Well, plate = 96) + scale_fill_gradient(limits = c(0,0.5), low = "white", high = "maroon1", guide = guide_legend(title = "Corrected Abs")) + geom_text(aes(label = MDA_dataset$SampLab), size = 2.1)) + theme(panel.grid = element_blank())
 
 ggsave(file = "Corrected_MDA_12_2_2016.pdf")
+
+
+# Prepping leaf weight dataset
+
+Leaf <- read.csv("~/Documents/Friesen\ lab/Enzymes\ copy/Methods_Paper/LeafDataWeight.csv")
+Leaf$Time <- as.factor(Leaf$Time)
+
+# Removing set 2
+Leaf <- subset(Leaf, Set == 1)
+Leaf2 <- subset(Leaf, Treatment == "TCA")
+
+# Rename Time factor levels
+levels(Leaf2$Time)[match("0",levels(Leaf2$Time))] <- "Before"
+levels(Leaf2$Time)[match("24",levels(Leaf2$Time))] <- "After"
+levels(Leaf2$Species)[match("MP",levels(Leaf2$Species))] <- "M_poly"
+levels(Leaf2$Species)[match("MT",levels(Leaf2$Species))] <- "M_trun"
+
+names(Leaf2)[names(Leaf2)=="Species"] <- "Sample"
+names(Leaf2)[names(Leaf2)=="PlantNumber"] <- "Plant"
+
+# Combine
+LeafCombo2 <- inner_join(Leaf2, MDA_dataset, by = c("Plant", "Sample", "Time"))
+head(LeafCombo2)
+
+LeafCombo2 <- within(LeafCombo2, StdAbs <- (CorrectedAbs / Weight))
+max(LeafCombo2$StdAbs)
+
+with(LeafCombo2, raw_map(data = StdAbs, well = Well, plate = 96)+ scale_fill_gradient(limits = c(0,20), low = "white", high = "maroon1", guide = guide_legend(title = expression(Abs[std])))  + geom_text(aes(label = LeafCombo2$SampLab), size = 2.1)) + theme(panel.grid = element_blank())
+
+ggsave(file = "MDA_Final_Map_12_3_2016.pdf")
+
+LeafCombo_Rep2 <- ddply(LeafCombo2, c("Sample", "Plant", "Time"), summarise, mean_StdAbs = mean(StdAbs), se_StdAbs = sqrt(var(StdAbs)/ length(StdAbs)))
+
+ggplot(LeafCombo_Rep2, aes(Plant, mean_StdAbs, fill = Time)) + geom_bar(stat = "identity", position = "dodge") + facet_wrap(~ Sample) + geom_errorbar(aes(ymax = mean_StdAbs + se_StdAbs, ymin = mean_StdAbs - se_StdAbs), position = "dodge") + ggtitle("Protein Quantification 12/1/2016") + labs(y = "Protein \n(ug/ml plant tissue)", x = "Plant Species")
+
+ggsave(file = "MDA_BarGraph_12_3_2016.pdf")

@@ -70,13 +70,11 @@ names(Leaf)[names(Leaf)=="PlantNumber"] <- "Plant"
 
 head(Leaf)
 
-# We had some weights that showed up as negative
 
 # Combining
 LeafCombo <- inner_join(Leaf, Prot_Quan_dataset, by = c("Plant", "Sample", "Time"))
 
 head(LeafCombo)
-# Using min-max norm
 LeafCombo <- within(LeafCombo, Concentration <- ((values - 0.025402243)/ 0.001034718))
 
 with(LeafCombo, raw_grid(data = Concentration, well = Well, plate_id = Plate, plate = 96)+ scale_fill_gradient(limits = c(0,500), low = "white", high = "purple", guide = guide_legend(title = expression(Abs[562])))  + geom_text(aes(label = LeafCombo$SampLab), size = 2.1)) + theme(panel.grid = element_blank())
