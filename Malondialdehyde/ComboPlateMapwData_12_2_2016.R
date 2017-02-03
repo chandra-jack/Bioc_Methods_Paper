@@ -80,6 +80,6 @@ ggsave(file = "MDA_Final_Map_12_3_2016.pdf")
 
 LeafCombo_Rep2 <- ddply(LeafCombo2, c("Sample", "Plant", "Time"), summarise, mean_StdAbs = mean(StdAbs), se_StdAbs = sqrt(var(StdAbs)/ length(StdAbs)))
 
-ggplot(LeafCombo_Rep2, aes(Plant, mean_StdAbs, fill = Time)) + geom_bar(stat = "identity", position = "dodge") + facet_wrap(~ Sample) + geom_errorbar(aes(ymax = mean_StdAbs + se_StdAbs, ymin = mean_StdAbs - se_StdAbs), position = "dodge") + ggtitle("Protein Quantification 12/1/2016") + labs(y = "Protein \n(ug/ml plant tissue)", x = "Plant Species")
+ggplot(LeafCombo_Rep2, aes(Plant, mean_StdAbs, fill = Time)) + geom_bar(stat = "identity", position = "dodge") + facet_wrap(~ Sample) + geom_errorbar(aes(ymax = mean_StdAbs + se_StdAbs, ymin = mean_StdAbs - se_StdAbs), position = "dodge") + ggtitle("MDA 12/1/2016") + labs(y = "Std. Absorbance \n/g plant tissue)", x = "Plant Species")
 
 ggsave(file = "MDA_BarGraph_12_3_2016.pdf")
