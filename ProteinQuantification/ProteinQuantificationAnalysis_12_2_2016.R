@@ -87,8 +87,10 @@ ggsave(file = "Prot_Quan_Final_Map_12_2_2016.pdf", width = 16)
 
 LeafCombo_Rep <- ddply(LeafCombo, c("Sample", "Plant", "Time"), summarise, mean_protein = mean(Protein), se_protein = sqrt(var(Protein)/ length(Protein)))
 
-ggplot(LeafCombo_Rep, aes(Plant, mean_protein, fill = Time)) + geom_bar(stat = "identity", position = "dodge") + facet_wrap(~ Sample) + geom_errorbar(aes(ymax = mean_protein + se_protein, ymin = mean_protein - se_protein), position = "dodge") + ggtitle("Protein Quantification 12/1/2016") + labs(y = "Protein \n(ug/ml plant tissue)", x = "Plant Species")
-ggsave(file = "ProtQuantTechRep_12_1_2016.pdf")
+#Shawna
+LeafCombo_Rep$Time <- factor(LeafCombo_Rep$Time, levels = c("Before", "After"))
+ggplot(subset(LeafCombo_Rep, Sample == "Tomato"), aes(Plant, mean_protein, fill = Time)) + geom_bar(stat = "identity", position = "dodge") + geom_errorbar(aes(ymax = mean_protein + se_protein, ymin = mean_protein - se_protein), position = "dodge") + ggtitle("Protein Quantification 12/1/2016") + labs(y = "Protein \n(ug/ml plant tissue)", x = "")  + scale_fill_grey(start = 0.25, end = 0.7) + scale_y_continuous(expand = c(0, 0))
+ggsave(file = "ProtQuantTechRep_March_30_2017.pdf")
 
 LeafCombo_Rep2 <- ddply(LeafCombo, c("Sample", "Time"), summarise, mean_protein = mean(Protein), se_protein = sqrt(var(Protein)/ length(Protein)))
 
